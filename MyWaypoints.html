@@ -1,38 +1,71 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
-<body>
-  <!--Bootstrap-->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <head>
-  <title>MyWaypoints</title>
-  <style>
-    p {text-align:center;}
-    .up{
-      height:30%;
-      width:100%;
-      top:0;
-    }
-    .down{
-      height:70%;
-      width:100%;
-      bottom:0;
-      border:3px solid #73AD21;
-    }
+    <title>
+      MyWayPoints
+    </title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+    /*  {text-align:center;}
+      .up{
+        height:30%;
+        width:100%;
+        top:0;
+      }
+      .down{
+        height:70%;
+        width:100%;
+        bottom:0;
+        border:3px solid #73AD21;
+      }*/
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
 
-  </style>
-</head>
-  <div ng-app="MyWayfront">
-    <div class="up">
-    <form ng-submit="submit()" name="MyWayInput">
-    <p style="margin-left:30px">Source:<input type="text" ng-model="source" required placeholder="Source"></p>
-    <p>Destination: <input type="text" ng-model="destination" required placeholder="Destination"></p>
-    <p><input type="submit" value="submit" class="btn btn-primary"></p>
-  </form>
-</div>
-<div class="down">
-  <p></p>
-</div>
-  </div>
-</body>
+    </style>
+    <script language="JavaScript">
+    function getPath(){
+      var source=document.getElementById("source").value;
+      var destination=document.getElementById("destination").value;
+      var xhttp=new XMLHttpRequest();
+      var url=`http://localhost:3000/path?src=${source}&dest=${destination}`;
+      console.log(url);
+      xhttp.open("POST",url,false);
+      xhttp.send();
+      var route=xhttp.response;
+
+      console.log(JSON.parse(route));
+
+  //    console.log("Source is "+source+" destination is "+destination);
+    }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUGOOKU_e3JzOCvP2hj2Yp6Aa5a8TTao0&callback=initMap"
+    async defer></script>
+    <script>
+    var map;
+         function initMap() {
+           console.log("Map started")
+           map = new google.maps.Map(document.getElementById('map'), {
+             center: {lat: -34.397, lng: 150.644},
+             zoom: 8
+           });
+         }
+    </script>
+  </head>
+  <body style="height:100%" >
+        <div >
+              <p style="margin-left:30px">Source:<input type="text" name="source" id="source"  placeholder="Source"></p>
+              <p>Destination: <input type="text" name="destination" id="destination" placeholder="Destination"></p>
+              <p><button style="padding:5px 5px; font-size:20px"  onclick="getPath()" type="button" class="btn btn-primary">Submit</button></p>
+        </div>
+      <div id="map" style="height:100%"></div>
+
+      <p></p>
+  </body>
 </html>

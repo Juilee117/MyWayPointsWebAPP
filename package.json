@@ -1,0 +1,28 @@
+{
+  "name": "mywayserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "MyWayPointsServer.js",
+  "scripts": {
+    "start": "node MyWayPointsServer.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Juilee117/MyWayPointsWebAPP.git"
+  },
+  "keywords": [
+    "weather",
+    "path"
+  ],
+  "author": "Juilee Paranjpe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Juilee117/MyWayPointsWebAPP/issues"
+  },
+  "homepage": "https://github.com/Juilee117/MyWayPointsWebAPP#readme",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "request": "^2.88.0"
+  }
+}
