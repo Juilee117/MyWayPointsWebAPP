@@ -6,31 +6,27 @@
     </title>
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <style>
-    /*  {text-align:center;}
-      .up{
-        height:30%;
-        width:100%;
-        top:0;
-      }
-      .down{
-        height:70%;
-        width:100%;
-        bottom:0;
-        border:3px solid #73AD21;
-      }*/
+    p{text-align:center;}
+
       #map {
         height: 100%;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
         height: 100%;
+
         margin: 0;
         padding: 0;
       }
 
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUGOOKU_e3JzOCvP2hj2Yp6Aa5a8TTao0&callback=initMap"
+    async defer></script>
     <script language="JavaScript">
+    var map;
+    var pathOnMap
     function getPath(){
+
       var source=document.getElementById("source").value;
       var destination=document.getElementById("destination").value;
       var xhttp=new XMLHttpRequest();
@@ -38,32 +34,48 @@
       console.log(url);
       xhttp.open("POST",url,false);
       xhttp.send();
-      var route=xhttp.response;
+      var returnedData=JSON.parse(xhttp.response);
+      console.log(returnedData);
 
-      console.log(JSON.parse(route));
+        pathOnMap.setPath(returnedData.routePts)
+        pathOnMap.setMap(map);
+        bounds  = new google.maps.LatLngBounds();
 
+        loc = new google.maps.LatLng(returnedData.boundPts.northeast);
+        bounds.extend(loc);
+
+        loc = new google.maps.LatLng(returnedData.boundPts.southwest);
+        bounds.extend(loc);
+
+        map.fitBounds(bounds);
+        map.panToBounds(bounds);
   //    console.log("Source is "+source+" destination is "+destination);
     }
+
+    function initMap() {
+      console.log("Map started")
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 41.850033, lng: -87.6500523},
+        zoom: 4.5
+      });
+      pathOnMap= new google.maps.Polyline({
+               geodesic: true,
+               strokeColor: '#FF0000',
+               strokeOpacity: 1.0,
+               strokeWeight: 2
+             });
+    }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAUGOOKU_e3JzOCvP2hj2Yp6Aa5a8TTao0&callback=initMap"
-    async defer></script>
-    <script>
-    var map;
-         function initMap() {
-           console.log("Map started")
-           map = new google.maps.Map(document.getElementById('map'), {
-             center: {lat: -34.397, lng: 150.644},
-             zoom: 8
-           });
-         }
-    </script>
+
+
   </head>
   <body style="height:100%" >
-        <div >
-              <p style="margin-left:30px">Source:<input type="text" name="source" id="source"  placeholder="Source"></p>
-              <p>Destination: <input type="text" name="destination" id="destination" placeholder="Destination"></p>
+        <div>
+              <p style="margin-left:30px">Source:<input type="text" value="Buffalo" name="source" id="source"  placeholder="Source"></p>
+              <p>Destination: <input type="text" value="Rochester" name="destination" id="destination" placeholder="Destination"></p>
               <p><button style="padding:5px 5px; font-size:20px"  onclick="getPath()" type="button" class="btn btn-primary">Submit</button></p>
         </div>
+
       <div id="map" style="height:100%"></div>
 
       <p></p>

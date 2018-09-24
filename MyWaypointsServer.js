@@ -5,7 +5,7 @@ var cors = require('cors')
 
 var port=3000;
 
-app.use(cors())
+app.use(cors());
 app.listen(port);
 console.log('Server port='+port);
 
@@ -20,11 +20,14 @@ app.post('/path',function(req,res){
   request.post(`https://maps.googleapis.com/maps/api/directions/json?origin=${source}&destination=${destination}&key=AIzaSyAUGOOKU_e3JzOCvP2hj2Yp6Aa5a8TTao0`,function(error,response,body){
     if(!error){
       var route=JSON.parse(body);
-      //console.log(route);
-      res.send(route);
+    console.log(route);
+
+      const decodePolyline = require('decode-google-map-polyline');
+      var routePoints=decodePolyline(route.routes[0].overview_polyline.points);
+      res.send({routePts:routePoints,boundPts: route.routes[0].bounds});
     }
     else{
       console.log(error);
     }
   })
-})
+});
