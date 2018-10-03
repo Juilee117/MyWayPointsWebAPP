@@ -24,12 +24,15 @@
     async defer></script>
     <script language="JavaScript">
     var map;
-    var pathOnMap
+    var pathOnMap;
+    var weatherMarker=new Array(7);
+    var infowindow=new Array(7);
     function getPath(){
 
       var source=document.getElementById("source").value;
       var destination=document.getElementById("destination").value;
       var xhttp=new XMLHttpRequest();
+      var weatherxhttp=new XMLHttpRequest();
       var url=`http://localhost:3000/path?src=${source}&dest=${destination}`;
       console.log(url);
       xhttp.open("POST",url,false);
@@ -49,6 +52,64 @@
 
         map.fitBounds(bounds);
         map.panToBounds(bounds);
+        //WEATHER PROCESSING
+        var i=0;
+        var weatherURL;
+        var routePointIncrement=Math.floor((returnedData.routePts.length-1)/6);
+        var nextRoutePoint=0;
+        for(i=0;i<6;i++){
+          weatherURL=`http://localhost:3000/weather?lat=${returnedData.routePts[nextRoutePoint].lat}&lng=${returnedData.routePts[nextRoutePoint].lng}`;
+          weatherxhttp.open("POST",weatherURL,false);
+          weatherxhttp.send();
+          var returnedWeather=JSON.parse(weatherxhttp.response);
+          weatherTemp=returnedWeather.weatherPts.main.temp;
+          var weatherInfo='<p><b>City: '+returnedWeather.weatherPts.name+'</b></p>'+
+                          '<p>Temperature= '+weatherTemp.toFixed(2)+'°F</p>'+
+                          '<p>Wind Speed= '+returnedWeather.weatherPts.wind.speed+'Miles/hour</p>'+
+                          '<p>Cloudiness= '+returnedWeather.weatherPts.clouds.all+'%</p>'+
+                          '<p>Humidity= '+returnedWeather.weatherPts.main.humidity+'%</p>'    ;
+          markerPosition={lat:returnedWeather.weatherPts.coord.lat,lng:returnedWeather.weatherPts.coord.lon};
+          weatherMarker[i].setPosition(markerPosition);
+          infowindow[i].setContent(weatherInfo);
+
+            nextRoutePoint+=routePointIncrement;
+        }
+        weatherURL=`http://localhost:3000/weather?lat=${returnedData.routePts[returnedData.routePts.length-1].lat}&lng=${returnedData.routePts[returnedData.routePts.length-1].lng}`;
+        weatherxhttp.open("POST",weatherURL,false);
+        weatherxhttp.send();
+        var returnedWeather=JSON.parse(weatherxhttp.response);
+        weatherTemp=returnedWeather.weatherPts.main.temp;
+        var weatherInfo='<p><b>City: '+returnedWeather.weatherPts.name+'</b></p>'+
+                        '<p>Temperature= '+weatherTemp.toFixed(2)+'°F</p>'+
+                        '<p>Wind Speed= '+returnedWeather.weatherPts.wind.speed+'Miles/hour</p>'+
+                        '<p>Cloudiness= '+returnedWeather.weatherPts.clouds.all+'%</p>'+
+                        '<p>Humidity= '+returnedWeather.weatherPts.main.humidity+'%</p>';
+        markerPosition={lat:returnedWeather.weatherPts.coord.lat,lng:returnedWeather.weatherPts.coord.lon};
+        weatherMarker[6].setPosition(markerPosition);
+        console.log(returnedWeather);
+        infowindow[6].setContent(weatherInfo);
+        weatherMarker[0].addListener('click', function() {
+          infowindow[0].open(map,weatherMarker[0]);
+        });
+        weatherMarker[1].addListener('click', function() {
+          infowindow[1].open(map,weatherMarker[1]);
+        });
+        weatherMarker[2].addListener('click', function() {
+          infowindow[2].open(map,weatherMarker[2]);
+        });
+        weatherMarker[3].addListener('click', function() {
+          infowindow[3].open(map,weatherMarker[3]);
+        });
+        weatherMarker[4].addListener('click', function() {
+          infowindow[4].open(map,weatherMarker[4]);
+        });
+        weatherMarker[5].addListener('click', function() {
+          infowindow[5].open(map,weatherMarker[5]);
+        });
+        weatherMarker[6].addListener('click', function() {
+          infowindow[6].open(map,weatherMarker[6]);
+        });
+
   //    console.log("Source is "+source+" destination is "+destination);
     }
 
@@ -64,6 +125,16 @@
                strokeOpacity: 1.0,
                strokeWeight: 2
              });
+      for(var i=0;i<7;i++){
+           weatherMarker[i] = new google.maps.Marker({
+             map: map,
+             title: 'Weather Info'
+           });
+           infowindow[i]= new google.maps.InfoWindow({
+             content:""
+           });
+       }
+
     }
     </script>
 

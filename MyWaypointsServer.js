@@ -15,19 +15,32 @@ app.get('/',function(req,res){
 app.post('/path',function(req,res){
   var source=req.query.src;
   var destination=req.query.dest;
-//  res.send('Path from '+source+' to '+destination);
-  console.log(req);
   request.post(`https://maps.googleapis.com/maps/api/directions/json?origin=${source}&destination=${destination}&key=AIzaSyAUGOOKU_e3JzOCvP2hj2Yp6Aa5a8TTao0`,function(error,response,body){
     if(!error){
-      var route=JSON.parse(body);
-    console.log(route);
-
+      var mapAPIResponse=JSON.parse(body);
       const decodePolyline = require('decode-google-map-polyline');
-      var routePoints=decodePolyline(route.routes[0].overview_polyline.points);
-      res.send({routePts:routePoints,boundPts: route.routes[0].bounds});
+      var routePoints=decodePolyline(mapAPIResponse.routes[0].overview_polyline.points);
+      //getting weather of route
+      console.log(routePoints.length);
+      var boundPoints=mapAPIResponse.routes[0].bounds.northeast;
+      res.send({routePts:routePoints,boundPts: mapAPIResponse.routes[0].bounds});
     }
     else{
       console.log(error);
     }
   })
+});
+app.post('/weather',function(req,res){
+  var lat=req.query.lat;
+  var lng=req.query.lng;
+  request.post(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=95f52ff79685682ce3f51008f96ad326&units=imperial`,function(weatherErr,weatherResponse,weatherBody){
+      if(!weatherErr){
+       weatherPoints=JSON.parse(weatherBody);
+
+      console.log(weatherPoints);
+      res.send({weatherPts:weatherPoints});
+      }
+      console.log(weatherPoints);
+    })
+
 });
